@@ -41,25 +41,25 @@ void main()
     j = 0;
 
     //first fit  i -> process  j -> block
-    while (i < n)
+   while (i < n)
+{
+    if (p[i].alloc == 0)
     {
-        if (p[i].alloc == 0)
+        for (j = 0; j < m; j++)
         {
-            for (j = 0; j < m; j++)
+            if (p[i].psize <= b[j].bsize)
             {
-                if (p[i].psize <= b[j].bsize)
-                {
-                    p[i].alloc = 1;
-                    p[i].bnum = b[j].bnum;
-                    b[j].bsize = b[j].bsize - p[i].psize;
-                    p[i].bx = j;
-                    break;
-                }
+                p[i].alloc = 1;
+                p[i].bnum = b[j].bnum;
+                p[i].bx = j;
+                // Update the remaining free space in the block
+                b[j].bsize -= p[i].psize;
+                break;
             }
         }
-        i++;
     }
-
+    i++;
+}
     printf("\n-------------------------------------------------------------------");
     printf("\nPROCESS ID\tPROCESS SIZE\tBLOCK NUMBER\tFREE SPACE\n");
     printf("\n-------------------------------------------------------------------");
