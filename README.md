@@ -1,1 +1,1 @@
-# operating-system-ktu-2019-CSL204-programs
+Includes programs related of Operating System CST206 KTU B.Tech 2019 scheme
