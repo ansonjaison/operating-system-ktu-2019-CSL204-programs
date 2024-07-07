@@ -1,118 +1,86 @@
-#include<stdio.h>
-int n,len,r=-1,j=1,m,i,f=0,refs[40],frame[20],missc=0,status[40],hitc=0,flag=0,k,recent[40];
-
-
-void main()
-{
+ #include <stdio.h>
+ int n, len, r = 0, m, i, f = 0, refs[40], frame[20], missc = 0, status[40], hitc = 0, flag = 0, k, recent[20];
+ void main()
+ {
     printf("\nEnter no of frames:\t");
-    scanf("%d",&n);
+    scanf("%d", &n);
     printf("\nEnter the length of Reference String:\t");
-    scanf("%d",&len);
+    scanf("%d", &len);
     printf("\nEnter the Reference String:\t");
-    for(i=0;i<len;i++)
-        scanf("%d",&refs[i]);
-
-   
-    for(i=0;i<n;i++)
+    for (i = 0; i < len; i++)
+        scanf("%d", &refs[i]);
+    for (i = 0; i < n; i++)
     {
-        frame[i]=0;
-        status[i]=0;
+        frame[i] = 0;
+        recent[i] = 0;
     }
-   
-   
     printf("\nReference String :\t");
-    for(i=0;i<len;i++)
-        printf("%d  ",refs[i]);
-    printf("\n\n");    
-   
-   
-   
-    for(i=0;i<len;i++)
+    for (i = 0; i < len; i++)
+        printf("%d  ", refs[i]);
+    printf("\n\n");
+    for (i = 0; i < len; i++)
     {
-        flag=0;
-        if(j<=n)  // frames empty case
+        flag = 0;
+        for (k = 0; k < n; k++)
         {
-            frame[f]= refs[i];
-            status[f]=0;
-            r++;
-            recent[r]=refs[i];
-            j++; missc++;
-           
+            if (refs[i] == frame[k])
+            {
+                flag = 1;
+                break;
+            }
         }
-       
-        else  //frames not empty
+        if (flag == 1)
         {
-           
-            for(k=0;k<n;k++)
+            hitc++;
+            status[f] = 1;
+            for (m = 0; m < n; m++)
             {
-                if(refs[i]==frame[k])
-                {
-                    flag=1;
+                if (refs[i] == recent[m])
                     break;
-                }
             }
-           
-            if(flag==1) //hit case
+            for (k = m; k < n - 1; k++)
             {
-                hitc++;
-                status[f]=1;
-                j++;
-               
-                for(m=0;m<n;m++)
-                {
-                    if(refs[i]==recent[m])
-                        break;
-                }
-               
-                for(k=m;k<n;k++)
-                {
-                    recent[k]=recent[k+1];
-                }
-                recent[r] = refs[i];
+                recent[k] = recent[k + 1];
             }
-            else //miss
+            recent[n - 1] = refs[i];
+        }
+        else
+        {
+            for (m = 0; m < n; m++)
             {
-                for(m=0;m<n;m++)
-                {
-                    if(frame[m]==recent[0])
-                        break;
-                }
-                frame[m]=refs[i];
-                missc++;
-                status[f]=0;
-                j++;
-                for(m=0;m<n;m++)
-                {
-                    recent[m]=recent[m+1];
-                }
-                recent[r] = refs[i];
+                if (frame[m] == recent[0])
+         break;
             }
-               
+            frame[m] = refs[i];
+            missc++;
+            status[f] = 0;
+            for (m = 0; m < n - 1; m++)
+            {
+                recent[m] = recent[m + 1];
+            }
+            recent[n - 1] = refs[i];
         }
         printf("Frame:\t");
-        for(k=0;k<n;k++)
+        for (k = 0; k < n; k++)
         {
-            printf("%d\t",frame[k]);
+                printf("%d\t", frame[k]);
         }
-       
-           
-        if(status[f]==0)
+        if (status[f] == 0)
         {
-            printf("Miss %d\n",missc);
-            if(f==n-1)
-                f=0;
+            printf("Miss %d\n", missc);
+            if (f == n - 1)
+                f = 0;
             else
                 f++;
         }
         else
-            printf("Hit %d\n",hitc);
-           
-           
-    }  
-   
-    printf("\n\nNo of Misses = %d",missc);
-    printf("\n\nNo of Hits = %d\n",hitc);
-}
+        {
+            printf("Hit %d\n", hitc);
+        }
+    }
+    printf("\n\nNo of Misses = %d", missc);
+    printf("\n\nNo of Hits = %d\n", hitc);
+ }
 
 /* OUTPUT
 
@@ -120,7 +88,7 @@ Enter no of frames:     3
 
 Enter the length of Reference String:   20
 
-Enter the Reference String:     1 2 3 4 2 1 5 6 2 1 2 3 7 6 3 2 1 2 3 6
+Enter the Reference String:     1  2  3  4  2  1  5  6  2  1  2  3  7  6  3  2  1  2  3  6
 
 Reference String :      1  2  3  4  2  1  5  6  2  1  2  3  7  6  3  2  1  2  3  6
 
