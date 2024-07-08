@@ -1,127 +1,110 @@
 #include <stdio.h>
 #include <string.h>
 
-int q[100], front = -1, rear = -1;
-
 struct process {
-    char name[20];
-    int at, tt, bt, wt, status, left, ct;
-} p[20], temp;
+    int at, bt, ct, tat, wt, rem_t;
+    char pid[20];
+} p[20];
 
 struct done {
-    char name[20];
-    int st, ct;
+    char pid[20];
+    int ct;
 } d[20];
 
-void enqueue(int j) {
-    if (front == -1 && rear == -1) {
-        front++;
-    }
-    rear++;
-    q[rear] = j;
-}
+int main() {
+    int n, tq, i, count = 0, j = 0;
+    int cmplted = 0, current_t = 0, ttat = 0, twt = 0;
+    float avg_tat, avg_wt;
 
-int dequeue() {
-    int item;
-    item = q[front];
-    if (front == rear) {
-        front = -1;
-        rear = -1;
-    } else {
-        front++;
-    }
-    return (item);
-}
-
-void main() {
-    int n, i, j, idle = 0, k, num, ls, t;
-    float avwt = 0, avtt = 0;
-
-    printf("ENTER THE NUMBER OF PROCESSES : ");
+    printf("Enter the number of processes: ");
     scanf("%d", &n);
+    printf("Enter the time quantum: ");
+    scanf("%d", &tq);
 
+    printf("ENTER THE PROCESS DETAILS\n");
     for (i = 0; i < n; i++) {
-        printf("\nENTER DETAILS OF PROCESS %d", i + 1);
-        printf("\nPROCESS NAME : ");
-        scanf(" %s", p[i].name);
-        printf("ARRIVAL TIME : ");
+        printf("PROCESS %d:\n", i + 1);
+        printf("Process ID: ");
+        scanf("%s", p[i].pid);
+        printf("Arrival time: ");
         scanf("%d", &p[i].at);
-        printf("BURST TIME : ");
+        printf("Burst time: ");
         scanf("%d", &p[i].bt);
-        p[i].left = p[i].bt;
-        p[i].status = 0;
+        p[i].rem_t = p[i].bt;
     }
 
-    printf("\nENTER THE TIME QUANTUM : ");
-    scanf("%d", &t);
-
-    for (i = 0, num = 0, ls = 0; ls < n;) {
-        for (j = 0; j < n; j++) {
-            if (p[j].status == 0 && p[j].at <= i) {
-                enqueue(j);
-                p[j].status = 1;
-            }
-        }
-
-        if (idle == 0 && front == -1) {
-            strcpy(d[num].name, "Idle");
-            d[num].st = i;
-            idle = 1;
-            i++;
-        } else if (front != -1) {
-            if (idle == 1) {
-                d[num].ct = i;
-                idle = 0;
-                num++;
-            }
-            k = dequeue();
-            d[num].st = i;
-            strcpy(d[num].name, p[k].name);
-            if (p[k].left <= t) {
-                d[num].ct = i + p[k].left;
-                p[k].ct = d[num].ct;
-                i = d[num].ct;
-                p[k].tt = i - p[k].at;
-                p[k].wt = p[k].tt - p[k].bt;
-                p[k].status = 2;
-                ls++;
-                num++;
-            } else if (p[k].left > t) {
-                d[num].ct = i + t;
-                i = d[num].ct;
-                p[k].left = p[k].left - t;
-                num++;
-                for (j = 0; j < n; j++) {
-                    if (p[j].status == 0 && p[j].at <= i) {
-                        enqueue(j);
-                        p[j].status = 1;
-                    }
+    while (cmplted < n) {
+        for (i = 0; i < n; i++) {
+            if (p[i].rem_t > 0 && p[i].at <= current_t) {
+                if (p[i].rem_t > tq) {
+                    p[i].rem_t -= tq;
+                    current_t += tq;
+                    strcpy(d[j].pid, p[i].pid);
+                    d[j].ct = current_t;
+                    j++;
+                } else {
+                    current_t += p[i].rem_t;
+                    p[i].ct = current_t;
+                    p[i].tat = p[i].ct - p[i].at;
+                    p[i].wt = p[i].tat - p[i].bt;
+                    cmplted++;
+                    ttat += p[i].tat;
+                    twt += p[i].wt;
+                    p[i].rem_t = 0;
+                    strcpy(d[j].pid, p[i].pid);
+                    d[j].ct = current_t;
+                    j++;
                 }
-                enqueue(k);
             }
-        } else {
-            i++;
         }
     }
 
-    printf("\nPROCESS NAME\tCOMPLETION TIME (ms)\tWAITING TIME (ms)\tTURNAROUND TIME (ms)\n\n");
+    printf("Process ID\tArrival time\tBurst time\tCompletion time\tTurnaround time\tWaiting time\n");
     for (i = 0; i < n; i++) {
-        printf("    %s\t\t\t%d\t\t\t%d\t\t\t%d\n", p[i].name, p[i].ct, p[i].wt, p[i].tt);
-        avwt += p[i].wt;
-        avtt += p[i].tt;
+        printf("%s\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n", p[i].pid, p[i].at, p[i].bt, p[i].ct, p[i].tat, p[i].wt);
     }
-    printf("\n\nGANTT CHART ");
-    printf("\n\t--------------------------------------------------------------------------\n\t");
-    for (i = 0; i < num; i++) {
-        printf("|");
-        printf("%s\t", d[i].name);
+
+    printf("--------------------GANTT CHART------------------\n");
+    for (i = 0; i < j; i++) {
+        printf("|%s\t", d[i].pid);
     }
-    printf(" |");
-    printf("\n\t--------------------------------------------------------------------------\n\t");
-    for (i = 0; i < num; i++) {
-        printf("%d\t", d[i].st);
+    printf("|\n0\t");
+    for (i = 0; i < j; i++) {
+        printf("%d\t", d[i].ct);
     }
-    printf("%d\t", d[num - 1].ct);
-    printf("\n\nAVERAGE WAITING TIME : %f", (avwt / n));
-    printf("\nAVERAGE TURNAROUND TIME : %f\n", (avtt / n));
+    avg_wt = (float)twt / n;
+    avg_tat = (float)ttat / n;
+    printf("\nAverage Turnaround time: %.2f", avg_tat);
+    printf("\nAverage Waiting time: %.2f", avg_wt);
+
+    return 0;
 }
+
+/* OUTPUT
+
+Enter the number of processes: 3
+Enter the time quantum: 2
+ENTER THE PROCESS DETAILS
+PROCESS 1:
+Process ID: 1
+Arrival time: 0
+Burst time: 5
+PROCESS 2:
+Process ID: 2
+Arrival time: 1
+Burst time: 4
+PROCESS 3:
+Process ID: 3
+Arrival time: 2
+Burst time: 6
+Process ID      Arrival time    Burst time      Completion time Turnaround time Waiting time
+1               0               5               13              13              8
+2               1               4               10              9               5
+3               2               6               15              13              7
+--------------------GANTT CHART------------------
+|1      |2      |3      |1      |2      |3      |1      |3      |
+0       2       4       6       8       10      12      13      15
+Average Turnaround time: 11.67
+Average Waiting time: 6.67
+
+*/
